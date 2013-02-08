@@ -5,12 +5,13 @@ cubism_contextPrototype.cube = function(host) {
 
   source.metric = function(expression) {
     return context.metric(function(start, stop, step, callback) {
-      d3.json(host + "/1.0/metric"
+      var xhr = d3.json(host + "/1.0/metric"
           + "?expression=" + encodeURIComponent(expression)
           + "&start=" + cubism_cubeFormatDate(start)
           + "&stop=" + cubism_cubeFormatDate(stop)
-          + "&step=" + step, function(data) {
-        if (!data) return callback(new Error("unable to load data"));
+          + "&step=" + step);
+      xhr.get(function(error, data) {
+        if (error) return callback(new Error("unable to load data"));
         callback(null, data.map(function(d) { return d.value; }));
       });
     }, expression += "");
