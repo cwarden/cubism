@@ -1,7 +1,8 @@
 cubism_contextPrototype.cube = function(host) {
   if (!arguments.length) host = "";
   var source = {},
-      context = this;
+      context = this,
+      credentials;
 
   source.metric = function(expression) {
     return context.metric(function(start, stop, step, callback) {
@@ -10,6 +11,9 @@ cubism_contextPrototype.cube = function(host) {
           + "&start=" + cubism_cubeFormatDate(start)
           + "&stop=" + cubism_cubeFormatDate(stop)
           + "&step=" + step);
+      if (credentials) {
+        xhr.header('Authorization', credentials);
+      }
       xhr.get(function(error, data) {
         if (error) return callback(new Error("unable to load data"));
         callback(null, data.map(function(d) { return d.value; }));
@@ -20,6 +24,10 @@ cubism_contextPrototype.cube = function(host) {
   // Returns the Cube host.
   source.toString = function() {
     return host;
+  };
+
+  source.credentials = function(creds) {
+    credentials = creds;
   };
 
   return source;
